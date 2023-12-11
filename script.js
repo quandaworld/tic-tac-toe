@@ -1,14 +1,22 @@
-const cell_div = document.querySelectorAll('.cell');
-const restart_btn = document.getElementById('restart');
-let xTurn = true;
+let mode = '';
 
-cell_div.forEach(cell => cell.addEventListener('click', addMark, {once: true}));
+window.addEventListener('load', () => {
+  document.querySelector('.mode').classList.add('show');
+});
 
-restart_btn.addEventListener('click', () => {
+document.querySelectorAll('.mode-btns button').forEach(btn => btn.addEventListener('click', (e) => {
+  mode = e.target.dataset.mode;
+  document.querySelector('.mode').classList.remove('show');
+}));
+
+document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', addMark, {once: true}));
+
+document.getElementById('restart').addEventListener('click', () => {
   location.reload();
 });
 
 function addMark(e) {
+  let xTurn = true;
   if (xTurn) {
     e.target.classList.add('x');
     document.getElementById('o-player').classList.add('o');
