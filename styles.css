@@ -2,7 +2,7 @@
 
 :root {
  --cell-size: 120px;
- --mark-size: calc((var(--cell-size)) * .9);
+ --mark-size: calc((var(--cell-size)) * .8);
  --line-color: rgb(210, 209, 209);
  --cell-color: white;
  --x-color: #52B5D5;
@@ -11,6 +11,7 @@
  --o-shadow-color: #fadecc;
  --mode-background: rgba(0, 0, 0, .8);
  --font-color: #141414;
+ --button-font-color: #141414;
 }
 
 * {
@@ -51,22 +52,25 @@ body {
 .mode-btns {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 25px;
 }
 
-.mode button {
+.mode button,
+#restart {
   cursor: pointer;
   padding: 6px 15px;
   border-radius: 5px;
-  border: none;
-  font-size: .9rem;
+  border: 1px solid var(--button-font-color);
+  font-size: 1rem;
   font-weight: 500;
-  color: var(--font-color);
+  color: var(--button-font-color);
+  background-color: white;
 }
 
-.mode button:hover {
+.mode button:hover,
+#restart:hover {
   color: white;
-  background-color: var(--font-color);
+  background-color: var(--button-font-color);
 }
 
 header {
@@ -75,10 +79,48 @@ header {
   align-items: center;
   margin-top: 10px;
   gap: 10px;
-  font-size: 1.7rem;
+  font-size: 1.5rem;
 }
 
-.board {
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+}
+
+.score-board {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.player-score {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px;
+  border: 1px solid var(--line-color);
+  border-bottom: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 1.8rem;
+}
+
+#x-player {
+  color: var(--x-color);
+}
+
+#x-player #x {
+  font-size: 2.3rem;
+}
+
+#o-player {
+  color: var(--o-color);
+}
+
+.game-board {
   display: grid;
   grid-template-columns: repeat(3, auto);
   background-color: var(--line-color);
@@ -102,8 +144,8 @@ header {
 
 .cell.x::before, 
 .cell.x::after,
-.board.x .cell:not(.x):not(.o):hover::before, 
-.board.x .cell:not(.x):not(.o):hover::after {
+.game-board.x .cell:not(.x):not(.o):hover::before, 
+.game-board.x .cell:not(.x):not(.o):hover::after {
   content: '';
   position: absolute;
   width: calc(var(--mark-size) * .15);
@@ -116,32 +158,32 @@ header {
   background-color: var(--x-color);
 }
 
-.board.x .cell:not(.x):not(.o):hover::before, 
-.board.x .cell:not(.x):not(.o):hover::after {
+.game-board.x .cell:not(.x):not(.o):hover::before, 
+.game-board.x .cell:not(.x):not(.o):hover::after {
   background-color: var(--x-shadow-color);
 }
 
 .cell.x::before, 
-.board.x .cell:not(.x):not(.o):hover::before  {
+.game-board.x .cell:not(.x):not(.o):hover::before  {
   transform: rotate(45deg);
 }
 
 .cell.x::after, 
-.board.x .cell:not(.x):not(.o):hover::after  {
+.game-board.x .cell:not(.x):not(.o):hover::after  {
   transform: rotate(-45deg);
 }
 
 .cell.o::before, 
 .cell.o::after,
-.board.o .cell:not(.x):not(.o):hover::before, 
-.board.o .cell:not(.x):not(.o):hover::after  {
+.game-board.o .cell:not(.x):not(.o):hover::before, 
+.game-board.o .cell:not(.x):not(.o):hover::after  {
   content: '';
   position: absolute;
   border-radius: 50%;
 }
 
 .cell.o::before,
-.board.o .cell:not(.x):not(.o):hover::before {
+.game-board.o .cell:not(.x):not(.o):hover::before {
   width: calc(var(--mark-size) * .8);
   height: calc(var(--mark-size) * .8);
 }
@@ -150,12 +192,12 @@ header {
   background-color: var(--o-color);
 }
 
-.board.o .cell:not(.x):not(.o):hover::before {
+.game-board.o .cell:not(.x):not(.o):hover::before {
   background-color: var(--o-shadow-color);
 }
 
 .cell.o::after, 
-.board.o .cell:not(.x):not(.o):hover::after  {
+.game-board.o .cell:not(.x):not(.o):hover::after  {
   width: calc(var(--mark-size) * .8 * .7);
   height: calc(var(--mark-size) * .8 * .7);
   background-color: white;
