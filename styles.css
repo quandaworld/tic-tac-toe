@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+
 :root {
  --cell-size: 120px;
  --mark-size: calc((var(--cell-size)) * .9);
@@ -7,12 +9,15 @@
  --o-color: #E65A01;
  --x-shadow-color: #dcf0f7;
  --o-shadow-color: #fadecc;
+ --mode-background: rgba(0, 0, 0, .8);
+ --font-color: #141414;
 }
 
-*, *::after, *::before {
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: 'DM Sans', sans-serif;
 }
 
 body {
@@ -21,6 +26,47 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+  color: var(--font-color);
+}
+
+.mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--mode-background);
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  color: white;
+}
+
+.mode.show {
+  display: flex;
+}
+
+.mode-btns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.mode button {
+  cursor: pointer;
+  padding: 6px 15px;
+  border-radius: 5px;
+  border: none;
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--font-color);
+}
+
+.mode button:hover {
+  color: white;
+  background-color: var(--font-color);
 }
 
 header {
@@ -29,6 +75,7 @@ header {
   align-items: center;
   margin-top: 10px;
   gap: 10px;
+  font-size: 1.7rem;
 }
 
 .board {
