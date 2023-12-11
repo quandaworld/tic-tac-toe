@@ -3,7 +3,7 @@
 :root {
  --cell-size: 120px;
  --mark-size: calc((var(--cell-size)) * .8);
- --line-color: rgb(210, 209, 209);
+ --line-color: rgb(226, 226, 226);
  --cell-color: white;
  --x-color: #3E80B6;
  --o-color: #E65A01;
@@ -118,10 +118,18 @@ main {
   align-items: center;
   padding: 0px 20px;
   border: 1px solid var(--line-color);
-  border-bottom: none;
+  border-bottom: 3.5px solid transparent;
   border-radius: 6px;
   font-weight: 500;
   font-size: 1.8rem;
+}
+
+.player-score.x {
+  border-bottom: 3.5px solid var(--x-color);
+}
+
+.player-score.o {
+  border-bottom: 3.5px solid var(--o-color);
 }
 
 #x-player {
