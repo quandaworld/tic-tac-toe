@@ -5,13 +5,13 @@
  --mark-size: calc((var(--cell-size)) * .8);
  --line-color: rgb(210, 209, 209);
  --cell-color: white;
- --x-color: #52B5D5;
+ --x-color: #3E80B6;
  --o-color: #E65A01;
  --x-shadow-color: #dcf0f7;
  --o-shadow-color: #fadecc;
  --mode-background: rgba(0, 0, 0, .8);
- --font-color: #141414;
- --button-font-color: #141414;
+ --font-color: #0E2F58;
+ --mode-font-color: #051323;;
 }
 
 * {
@@ -60,17 +60,33 @@ body {
   cursor: pointer;
   padding: 6px 15px;
   border-radius: 5px;
-  border: 1px solid var(--button-font-color);
   font-size: 1rem;
   font-weight: 500;
-  color: var(--button-font-color);
   background-color: white;
+}
+
+.mode button {
+  color: var(--mode-font-color);  
+  border: 1px solid var(--mode-font-color);
+
+}
+
+#restart {
+  color: var(--font-color); 
+  border: 1px solid var(--font-color);
 }
 
 .mode button:hover,
 #restart:hover {
   color: white;
-  background-color: var(--button-font-color);
+}
+
+.mode button:hover {
+  background-color: var(--mode-font-color);
+}
+
+#restart:hover {
+  background-color: var(--font-color);
 }
 
 header {
@@ -113,7 +129,7 @@ main {
 }
 
 #x-player #x {
-  font-size: 2.3rem;
+  font-size: 2.4rem;
 }
 
 #o-player {
