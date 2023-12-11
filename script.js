@@ -2,7 +2,8 @@ const cell_div = document.querySelectorAll('.cell');
 const restart_btn = document.getElementById('restart');
 let xTurn = true;
 
-cell_div.forEach(cell => cell.addEventListener('click', addMark));
+cell_div.forEach(cell => cell.addEventListener('click', addMark, {once: true}));
+
 restart_btn.addEventListener('click', () => {
   location.reload();
 })
