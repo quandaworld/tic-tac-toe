@@ -9,9 +9,9 @@
  --o-color: #E65A01;
  --x-shadow-color: #dcf0f7;
  --o-shadow-color: #fadecc;
- --mode-background: rgba(0, 0, 0, .8);
+ --mode-background: rgba(0, 0, 0, .7);
  --font-color: #0E2F58;
- --mode-font-color: #051323;;
+ --mode-font-color: #0a1d35;;
 }
 
 * {
@@ -43,6 +43,7 @@ body {
   align-items: center;
   gap: 20px;
   color: white;
+  backdrop-filter: blur(2.5px);
 }
 
 .mode.show {
