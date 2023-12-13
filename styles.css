@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;0,9..40,1000;1,9..40,1000&display=swap');
 
 :root {
  --cell-size: 120px;
@@ -11,7 +11,8 @@
  --o-shadow-color: #fadecc;
  --mode-background: rgba(0, 0, 0, .7);
  --font-color: #0E2F58;
- --mode-font-color: #0a1d35;;
+ --mode-font-color: #0a1d35;
+ --result-size: calc((100% - 400px) / 2);
 }
 
 * {
@@ -22,12 +23,14 @@
 }
 
 body {
+  /* use minmax to set min-height to 670px */
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   color: var(--font-color);
+  background-color: var(--background-color);
 }
 
 .mode {
@@ -57,7 +60,8 @@ body {
 }
 
 .mode button,
-#restart {
+#restart,
+#next-game {
   cursor: pointer;
   padding: 6px 15px;
   border-radius: 5px;
@@ -69,16 +73,17 @@ body {
 .mode button {
   color: var(--mode-font-color);  
   border: 1px solid var(--mode-font-color);
-
 }
 
-#restart {
+#restart,
+#next-game {
   color: var(--font-color); 
   border: 1px solid var(--font-color);
 }
 
 .mode button:hover,
-#restart:hover {
+#restart:hover,
+#next-game:hover {
   color: white;
 }
 
@@ -86,7 +91,8 @@ body {
   background-color: var(--mode-font-color);
 }
 
-#restart:hover {
+#restart:hover,
+#next-game:hover {
   background-color: var(--font-color);
 }
 
@@ -103,14 +109,19 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 50px;
+  gap: 60px;
 }
 
-.score-board {
+.score-board,
+.game-btns {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+}
+
+.game-btns {
+  width: 90%;
 }
 
 .player-score {
@@ -225,7 +236,26 @@ main {
 .game-board.o .cell:not(.x):not(.o):hover::after  {
   width: calc(var(--mark-size) * .8 * .7);
   height: calc(var(--mark-size) * .8 * .7);
-  background-color: white;
+  background-color: var(--cell-color);
+}
+
+.result {
+  position: fixed;
+  top: calc(var(--result-size) + 30px);
+  left: var(--result-size);
+  right: var(--result-size);
+  bottom: calc(var(--result-size) - 30px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 3.2rem;
+  font-weight: 1000;
+  font-style: italic;
+  backdrop-filter: blur(3px);
+}
+
+.result.show {
+  display: flex;
 }
 
 footer {
