@@ -3,8 +3,7 @@
 :root {
  --cell-size: 120px;
  --mark-size: calc((var(--cell-size)) * .8);
- --line-color: rgb(226, 226, 226);
- --cell-color: white;
+ --line-color: rgb(222, 222, 222);
  --x-color: #3E80B6;
  --o-color: #E65A01;
  --x-shadow-color: #dcf0f7;
@@ -13,6 +12,7 @@
  --font-color: #0E2F58;
  --mode-font-color: #0a1d35;
  --result-size: calc((100% - 400px) / 2);
+ --background-color: #f9f6ee;
 }
 
 * {
@@ -45,7 +45,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  color: white;
+  color: var(--background-color);
   backdrop-filter: blur(2.5px);
 }
 
@@ -67,7 +67,7 @@ body {
   border-radius: 5px;
   font-size: 1rem;
   font-weight: 500;
-  background-color: white;
+  background-color: var(--background-color);
 }
 
 .mode button {
@@ -84,7 +84,7 @@ body {
 .mode button:hover,
 #restart:hover,
 #next-game:hover {
-  color: white;
+  color: var(--background-color);
 }
 
 .mode button:hover {
@@ -164,7 +164,7 @@ main {
 }
 
 .cell {
-  background-color: var(--cell-color);
+  background-color: var(--background-color);
   width: var(--cell-size);
   height: var(--cell-size);
   display: flex;
@@ -236,10 +236,10 @@ main {
 .game-board.o .cell:not(.x):not(.o):hover::after  {
   width: calc(var(--mark-size) * .8 * .7);
   height: calc(var(--mark-size) * .8 * .7);
-  background-color: var(--cell-color);
+  background-color: var(--background-color);
 }
 
-.result {
+.result-message {
   position: fixed;
   top: calc(var(--result-size) + 30px);
   left: var(--result-size);
@@ -248,13 +248,12 @@ main {
   display: none;
   justify-content: center;
   align-items: center;
-  font-size: 3.2rem;
+  font-size: 4rem;
   font-weight: 1000;
-  font-style: italic;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(8px);
 }
 
-.result.show {
+.result-message.show {
   display: flex;
 }
 
