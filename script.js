@@ -8,6 +8,9 @@ const DOMLogic = (function() {
   const mode_btns = document.querySelectorAll('.mode-btns button');
   const restart_btn = document.getElementById('restart');
   const cell_divs = document.querySelectorAll('.cell');
+  const resultMessage_div = document.querySelector('.result-message');
+  const winner_span = document.getElementById('winner');
+  const result_span = document.getElementById('result');
   let xTurn = true;
   let currentPlayer;
   let mode;
@@ -64,31 +67,47 @@ const DOMLogic = (function() {
     xTurn = !xTurn;
   }
 
+  function showResult() {
+    winner_span.innerText = currentPlayer.toUpperCase();
+    result_span.innerText = ' WINS';
+    resultMessage_div.classList.add('show');
+  }
+
   return {
     getCurrentPlayer: () => currentPlayer,
     getMode: () => mode,
+    showResult,
   };
 })();
 
 const game = (function() {
-  const gameBoardArr = ['', '', '', '', '', '', '', '', ''];
-  const winCombinations = [
-    [0, 1, 2],
-    [0, 3, 6],
-    [0, 4, 8],
-    [1, 4, 7],
-    [2, 4, 6],
-    [2, 5, 8],
-    [3, 4, 5],
-    [6, 7, 8]
-  ];
+  const gameBoard = ['', '', '', '', '', '', '', '', ''];
 
   function updateGameBoard(e) {
-    gameBoardArr.splice(e.target.dataset.cell, 1, DOMLogic.getCurrentPlayer());
+    gameBoard.splice(e.target.dataset.cell, 1, DOMLogic.getCurrentPlayer());
   }
 
   function checkForWin() {
+    const winCombinations = [
+      [0, 1, 2],
+      [0, 3, 6],
+      [0, 4, 8],
+      [1, 4, 7],
+      [2, 4, 6],
+      [2, 5, 8],
+      [3, 4, 5],
+      [6, 7, 8]
+    ];
 
+    for (let i = 0; i < winCombinations.length; i++) {
+      const [a, b, c] = winCombinations[i];
+      if (gameBoard[a] !== '' && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+        // end game 
+        // display winning message
+        DOMLogic.showResult();
+        // increment winner score
+      }
+    }
   }
 
   function checkForTie() {
