@@ -11,7 +11,6 @@
  --mode-background: rgba(0, 0, 0, .7);
  --font-color: #0E2F58;
  --mode-font-color: #0a1d35;
- --result-size: calc((100% - 400px) / 2);
  --background-color: #f9f6ee;
 }
 
@@ -23,7 +22,6 @@
 }
 
 body {
-  /* use minmax to set min-height to 670px */
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -163,6 +161,10 @@ main {
   gap: 7px;
 }
 
+.game-board.end {
+  position: relative;
+}
+
 .cell {
   background-color: var(--background-color);
   width: var(--cell-size);
@@ -240,11 +242,11 @@ main {
 }
 
 .result-message {
-  position: fixed;
-  top: calc(var(--result-size) + 30px);
-  left: var(--result-size);
-  right: var(--result-size);
-  bottom: calc(var(--result-size) - 30px);
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
   display: none;
   justify-content: center;
   align-items: center;
