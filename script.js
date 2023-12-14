@@ -89,7 +89,6 @@ const DOMLogic = (function() {
     } else {
       winner_span.innerText = currentPlayer.toUpperCase();
       result_span.innerText = ' WINS';
-      game.updateScore();
       xScore_div.innerText = game.getXScore() ? game.getXScore() : '-';
       oScore_div.innerText = game.getOScore() ? game.getOScore() : '-';
     }
@@ -128,6 +127,7 @@ const game = (function() {
     for (let i = 0; i < winCombinations.length; i++) {
       const [a, b, c] = winCombinations[i];
       if (gameBoard[a] !== '' && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+        updateScore();
         DOMLogic.displayResult('win');
         win = true;
         return;
@@ -155,7 +155,6 @@ const game = (function() {
     checkForWin, 
     checkForTie,
     resetGameBoard,
-    updateScore,
     getXScore: () => xScore,
     getOScore: () => oScore,
   };
