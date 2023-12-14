@@ -89,8 +89,9 @@ const DOMLogic = (function() {
     } else {
       winner_span.innerText = currentPlayer.toUpperCase();
       result_span.innerText = ' WINS';
-      xScore_div.innerText = game.getXScore();
-      oScore_div.innerText = game.getOScore();
+      game.updateScore();
+      xScore_div.innerText = game.getXScore() ? game.getXScore() : '-';
+      oScore_div.innerText = game.getOScore() ? game.getOScore() : '-';
     }
     resultMessage_div.classList.add('show');
     gameBoard_div.classList.add('end');
@@ -113,10 +114,6 @@ const game = (function() {
     gameBoard.splice(e.target.dataset.cell, 1, DOMLogic.getCurrentPlayer());
   }
 
-  function checkIfGameOver() {
-    return (gameBoard.includes('') || win) ? false : true;
-  }
-
   function checkForWin() {
     const winCombinations = [
       [0, 1, 2],
@@ -133,14 +130,13 @@ const game = (function() {
       if (gameBoard[a] !== '' && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
         DOMLogic.displayResult('win');
         win = true;
-        updateScore();
         return;
       }
     }
   }
 
   function checkForTie() {
-    if (checkIfGameOver() && !win)  {
+    if (!gameBoard.includes('') && !win)  {
       DOMLogic.displayResult('tie');
     }
   }
@@ -150,8 +146,8 @@ const game = (function() {
   }
 
   function resetGameBoard() {
+    win = false;
     gameBoard.forEach((cell, index) => gameBoard[index] = '');
-    console.log(gameBoard);
   }
 
   return {
@@ -159,6 +155,7 @@ const game = (function() {
     checkForWin, 
     checkForTie,
     resetGameBoard,
+    updateScore,
     getXScore: () => xScore,
     getOScore: () => oScore,
   };
