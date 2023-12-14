@@ -7,6 +7,7 @@ const DOMLogic = (function() {
   const mode_div = document.querySelector('.mode');
   const mode_btns = document.querySelectorAll('.mode-btns button');
   const restart_btn = document.getElementById('restart');
+  const nextGame_btn = document.getElementById('next-game');
   const cell_divs = document.querySelectorAll('.cell');
   const resultMessage_div = document.querySelector('.result-message');
   const winner_span = document.getElementById('winner');
@@ -30,12 +31,24 @@ const DOMLogic = (function() {
     location.reload();
   });
 
+  nextGame_btn.addEventListener('click', clearGameBoard);
+
   cell_divs.forEach(cell => {
     cell.addEventListener('click', handleClick, {once: true});
   });
 
   function addMark(e, currentPlayer) {
     e.target.classList.add(currentPlayer);
+  }
+
+  function clearGameBoard(e) {
+    resultMessage_div.classList.remove('show');
+    gameBoard_div.classList.remove('end');
+    game.resetGameBoard();
+    cell_divs.forEach(cell => {
+      cell.classList.remove('x', 'o');
+      cell.addEventListener('click', handleClick, {once: true});
+    });
   }
 
   function highlightCurrentPlayer() {
@@ -71,6 +84,7 @@ const DOMLogic = (function() {
 
   function displayResult(result) {
     if (result === 'tie') {
+      winner_span.innerText = '';
       result_span.innerText = 'DRAW';
     } else {
       winner_span.innerText = currentPlayer.toUpperCase();
@@ -100,7 +114,7 @@ const game = (function() {
   }
 
   function checkIfGameOver() {
-    return (gameBoard.includes('')) ? false : true;
+    return (gameBoard.includes('') || win) ? false : true;
   }
 
   function checkForWin() {
@@ -135,10 +149,16 @@ const game = (function() {
     (DOMLogic.getCurrentPlayer() === 'x') ? xScore++ : oScore++;
   }
 
+  function resetGameBoard() {
+    gameBoard.forEach((cell, index) => gameBoard[index] = '');
+    console.log(gameBoard);
+  }
+
   return {
     updateGameBoard, 
     checkForWin, 
     checkForTie,
+    resetGameBoard,
     getXScore: () => xScore,
     getOScore: () => oScore,
   };
