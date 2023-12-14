@@ -11,6 +11,8 @@ const DOMLogic = (function() {
   const resultMessage_div = document.querySelector('.result-message');
   const winner_span = document.getElementById('winner');
   const result_span = document.getElementById('result');
+  const xScore_div = document.getElementById('x-score');
+  const oScore_div = document.getElementById('o-score');
   let xTurn = true;
   let currentPlayer;
   let mode;
@@ -67,24 +69,38 @@ const DOMLogic = (function() {
     xTurn = !xTurn;
   }
 
-  function showResult() {
-    winner_span.innerText = currentPlayer.toUpperCase();
-    result_span.innerText = ' WINS';
+  function displayResult(result) {
+    if (result === 'tie') {
+      result_span.innerText = 'DRAW';
+    } else {
+      winner_span.innerText = currentPlayer.toUpperCase();
+      result_span.innerText = ' WINS';
+      xScore_div.innerText = game.getXScore();
+      oScore_div.innerText = game.getOScore();
+    }
     resultMessage_div.classList.add('show');
+    gameBoard_div.classList.add('end');
   }
 
   return {
     getCurrentPlayer: () => currentPlayer,
     getMode: () => mode,
-    showResult,
+    displayResult,
   };
 })();
 
 const game = (function() {
   const gameBoard = ['', '', '', '', '', '', '', '', ''];
+  let xScore = 0;
+  let oScore = 0;
+  let win = false;
 
   function updateGameBoard(e) {
     gameBoard.splice(e.target.dataset.cell, 1, DOMLogic.getCurrentPlayer());
+  }
+
+  function checkIfGameOver() {
+    return (gameBoard.includes('')) ? false : true;
   }
 
   function checkForWin() {
@@ -98,21 +114,32 @@ const game = (function() {
       [3, 4, 5],
       [6, 7, 8]
     ];
-
     for (let i = 0; i < winCombinations.length; i++) {
       const [a, b, c] = winCombinations[i];
       if (gameBoard[a] !== '' && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
-        // end game 
-        // display winning message
-        DOMLogic.showResult();
-        // increment winner score
+        DOMLogic.displayResult('win');
+        win = true;
+        updateScore();
+        return;
       }
     }
   }
 
   function checkForTie() {
-
+    if (checkIfGameOver() && !win)  {
+      DOMLogic.displayResult('tie');
+    }
   }
 
-  return {updateGameBoard, checkForWin, checkForTie};
+  function updateScore() {
+    (DOMLogic.getCurrentPlayer() === 'x') ? xScore++ : oScore++;
+  }
+
+  return {
+    updateGameBoard, 
+    checkForWin, 
+    checkForTie,
+    getXScore: () => xScore,
+    getOScore: () => oScore,
+  };
 })();
