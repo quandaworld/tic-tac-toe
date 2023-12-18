@@ -20,22 +20,16 @@ const DOMLogic = (function() {
 
   mode_div.classList.add('show');
 
-  mode_btns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      mode = e.target.dataset.mode;
-      document.querySelector('.mode').classList.remove('show');
-    });
-  });
+  mode_btns.forEach(btn => btn.addEventListener('click', (e) => {
+    mode = e.target.dataset.mode;
+    document.querySelector('.mode').classList.remove('show');
+  }));
 
-  restart_btn.addEventListener('click', () => {
-    location.reload();
-  });
+  restart_btn.addEventListener('click', () => location.reload());
 
   nextGame_btn.addEventListener('click', clearGameBoard);
 
-  cell_divs.forEach(cell => {
-    cell.addEventListener('click', handleClick, {once: true});
-  });
+  cell_divs.forEach(cell => cell.addEventListener('click', handleClick, {once: true}));
 
   function addMark(e, currentPlayer) {
     e.target.classList.add(currentPlayer);
@@ -77,8 +71,14 @@ const DOMLogic = (function() {
     highlightCurrentPlayer();
     setBoardHoverClass();
     game.updateGameBoard(e);
-    game.checkForWin();
-    game.checkForTie();
+
+    if (game.checkForWin(currentPlayer)) {
+      game.updateScore();
+      displayResult('win');
+    } else if (game.checkForTie()) {
+      displayResult('tie');
+    }
+    
     xTurn = !xTurn;
   }
 
@@ -99,7 +99,6 @@ const DOMLogic = (function() {
   return {
     getCurrentPlayer: () => currentPlayer,
     getMode: () => mode,
-    displayResult,
   };
 })();
 
@@ -107,13 +106,12 @@ const game = (function() {
   const gameBoard = ['', '', '', '', '', '', '', '', ''];
   let xScore = 0;
   let oScore = 0;
-  let win = false;
 
   function updateGameBoard(e) {
-    gameBoard.splice(e.target.dataset.cell, 1, DOMLogic.getCurrentPlayer());
+    gameBoard[e.target.dataset.cell] = DOMLogic.getCurrentPlayer();
   }
 
-  function checkForWin() {
+  function checkForWin(player) {
     const winCombinations = [
       [0, 1, 2],
       [0, 3, 6],
@@ -124,21 +122,14 @@ const game = (function() {
       [3, 4, 5],
       [6, 7, 8]
     ];
-    for (let i = 0; i < winCombinations.length; i++) {
-      const [a, b, c] = winCombinations[i];
-      if (gameBoard[a] !== '' && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
-        updateScore();
-        DOMLogic.displayResult('win');
-        win = true;
-        return;
-      }
-    }
+
+    return winCombinations.some(combination => {
+      return combination.every(index => gameBoard[index] === player)
+    });
   }
 
   function checkForTie() {
-    if (!gameBoard.includes('') && !win)  {
-      DOMLogic.displayResult('tie');
-    }
+    return !gameBoard.includes('');
   }
 
   function updateScore() {
@@ -146,7 +137,6 @@ const game = (function() {
   }
 
   function resetGameBoard() {
-    win = false;
     gameBoard.forEach((cell, index) => gameBoard[index] = '');
   }
 
@@ -155,6 +145,7 @@ const game = (function() {
     checkForWin, 
     checkForTie,
     resetGameBoard,
+    updateScore,
     getXScore: () => xScore,
     getOScore: () => oScore,
   };
