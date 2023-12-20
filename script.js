@@ -140,12 +140,21 @@ const game = (function() {
     gameBoard.forEach((cell, index) => gameBoard[index] = '');
   }
 
+  function getEmptyCells(board) {
+    const emptyCells = [];
+    board.filter((cell, index) => {
+      if (cell === '') emptyCells.push(index);
+    });
+    return emptyCells;
+  }
+
   return {
     updateGameBoard, 
     checkForWin, 
     checkForTie,
     resetGameBoard,
     updateScore,
+    getEmptyCells,
     getXScore: () => xScore,
     getOScore: () => oScore,
     getGameBoard: () => gameBoard,
