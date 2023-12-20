@@ -72,10 +72,10 @@ const DOMLogic = (function() {
     setBoardHoverClass();
     game.updateGameBoard(e);
 
-    if (game.checkForWin(currentPlayer)) {
+    if (game.checkForWin(game.getGameBoard(), currentPlayer)) {
       game.updateScore();
       displayResult('win');
-    } else if (game.checkForTie()) {
+    } else if (game.checkForTie(game.getGameBoard())) {
       displayResult('tie');
     }
     
@@ -111,7 +111,7 @@ const game = (function() {
     gameBoard[e.target.dataset.cell] = DOMLogic.getCurrentPlayer();
   }
 
-  function checkForWin(player) {
+  function checkForWin(board, player) {
     const winCombinations = [
       [0, 1, 2],
       [0, 3, 6],
@@ -124,12 +124,12 @@ const game = (function() {
     ];
 
     return winCombinations.some(combination => {
-      return combination.every(index => gameBoard[index] === player)
+      return combination.every(index => board[index] === player)
     });
   }
 
-  function checkForTie() {
-    return !gameBoard.includes('');
+  function checkForTie(board) {
+    return !board.includes('');
   }
 
   function updateScore() {
@@ -148,5 +148,6 @@ const game = (function() {
     updateScore,
     getXScore: () => xScore,
     getOScore: () => oScore,
+    getGameBoard: () => gameBoard,
   };
 })();
