@@ -99,6 +99,8 @@ const DOMLogic = (function() {
   return {
     getCurrentPlayer: () => currentPlayer,
     getMode: () => mode,
+    getXPlayer: () => X_PLAYER,
+    getOPlayer: () => O_PLAYER,
   };
 })();
 
@@ -133,7 +135,7 @@ const game = (function() {
   }
 
   function updateScore() {
-    (DOMLogic.getCurrentPlayer() === 'x') ? xScore++ : oScore++;
+    (DOMLogic.getCurrentPlayer() === DOMLogic.getXPlayer()) ? xScore++ : oScore++;
   }
 
   function resetGameBoard() {
@@ -158,5 +160,63 @@ const game = (function() {
     getXScore: () => xScore,
     getOScore: () => oScore,
     getGameBoard: () => gameBoard,
+  };
+})();
+
+const AIMode = (function() {
+  const humanPlayer = DOMLogic.getXPlayer();
+  const aiPlayer = DOMLogic.getOPlayer();
+
+  function minimax(board, depth, isMaximizing) {
+    if (game.checkForWin(humanPlayer)) {
+      return -1 + depth;
+    } else if (game.checkForWin(aiPlayer)) {
+      return 1 - depth;
+    } else if (game.checkForTie(board)) {
+      return 0;
+    }
+
+    const emptyCells = game.getEmptyCells(board);
+
+    if (isMaximizing) {
+      let maxScore = -Infinity;
+      emptyCells.forEach(index => {
+        const newBoard = [...board];
+        newBoard[index] = aiPlayer;
+        const score = minimax(newBoard, depth + 1, false);
+        maxScore = Math.max(score, maxScore);
+      });
+      return maxScore;
+    } else {
+      let minScore = Infinity;
+      emptyCells.forEach(index => {
+        const newBoard = [...board];
+        newBoard[index] = humanPlayer;
+        const score = minimax(newBoard, depth + 1, true);
+        minScore = Math.min(score, minScore);
+      });
+      return minScore; 
+    }
+  }
+
+  function findBestMove(board) {
+    let bestScore = -Infinity;
+    let bestMove;
+
+    game.getEmptyCells(board).forEach(index => {
+      const newBoard = [...game.getGameBoard()];
+      newBoard[index] = aiPlayer;
+      const score = minimax(newBoard, 0, false);
+      if (score > bestScore) {
+        bestScore = score;
+        bestMove = index;
+      }
+    });
+
+    return bestMove;
+  }
+
+  return {
+    findBestMove,
   };
 })();
