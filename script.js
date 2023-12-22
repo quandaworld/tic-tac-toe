@@ -81,10 +81,7 @@ const DOMLogic = (function() {
     
     xTurn = !xTurn;
 
-    if (mode === "unbeatable" && !xTurn) {
-      const bestMove = AIMode.findBestMove(game.getGameBoard());
-      document.querySelector(`[data-cell='${bestMove}']`).click();
-    }
+    AIMode.playUnbeatable();
   }
 
   function displayResult(result) {
@@ -102,6 +99,7 @@ const DOMLogic = (function() {
   }
 
   return {
+    getXTurn: () => xTurn,
     getCurrentPlayer: () => currentPlayer,
     getMode: () => mode,
     getXPlayer: () => X_PLAYER,
@@ -221,7 +219,14 @@ const AIMode = (function() {
     return bestMove;
   }
 
+  function playUnbeatable() {
+    if (DOMLogic.getMode() === "unbeatable" && !DOMLogic.getXTurn()) {
+      const bestMove = findBestMove(game.getGameBoard());
+      document.querySelector(`[data-cell='${bestMove}']`).click();
+    }
+  }
+
   return {
-    findBestMove,
+    playUnbeatable,
   };
 })();
