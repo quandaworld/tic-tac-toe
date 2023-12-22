@@ -40,7 +40,7 @@ const DOMLogic = (function() {
     gameBoard_div.classList.remove('end');
     game.resetGameBoard();
     cell_divs.forEach(cell => {
-      cell.classList.remove('x', 'o');
+      cell.classList.remove(X_PLAYER, O_PLAYER);
       cell.addEventListener('click', handleClick, {once: true});
     });
   }
@@ -80,6 +80,11 @@ const DOMLogic = (function() {
     }
     
     xTurn = !xTurn;
+
+    if (mode === "unbeatable" && !xTurn) {
+      const bestMove = AIMode.findBestMove(game.getGameBoard());
+      document.querySelector(`[data-cell='${bestMove}']`).click();
+    }
   }
 
   function displayResult(result) {
@@ -168,10 +173,10 @@ const AIMode = (function() {
   const aiPlayer = DOMLogic.getOPlayer();
 
   function minimax(board, depth, isMaximizing) {
-    if (game.checkForWin(humanPlayer)) {
-      return -1 + depth;
-    } else if (game.checkForWin(aiPlayer)) {
-      return 1 - depth;
+    if (game.checkForWin(board, humanPlayer)) {
+      return -1;
+    } else if (game.checkForWin(board, aiPlayer)) {
+      return 1;
     } else if (game.checkForTie(board)) {
       return 0;
     }
@@ -204,7 +209,7 @@ const AIMode = (function() {
     let bestMove;
 
     game.getEmptyCells(board).forEach(index => {
-      const newBoard = [...game.getGameBoard()];
+      const newBoard = [...board];
       newBoard[index] = aiPlayer;
       const score = minimax(newBoard, 0, false);
       if (score > bestScore) {
