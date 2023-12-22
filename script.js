@@ -32,10 +32,6 @@ const DOMLogic = (function() {
     clearGameBoard(e);
     if (mode !== 'friend' && !xTurn) AIMode.makeMove();
     if (mode[0] === 'm') convertMediumMode();
-
-    // if unbeatable and O turn, O play in center (random)
-    // why in non-friend mode, xTurn doesn't switch normally after nextGame
-    console.log(mode);
   });
 
   cell_divs.forEach(cell => cell.addEventListener('click', handleClick, {once: true}));
@@ -85,17 +81,24 @@ const DOMLogic = (function() {
     highlightCurrentPlayer();
     setBoardHoverClass();
     game.updateGameBoard(e);
+    ifGameOver();
+    xTurn = !xTurn;
 
+    if (mode !== 'friend' && !xTurn && !ifGameOver()) {
+      AIMode.makeMove();
+    }
+  }
+
+  function ifGameOver() {
     if (game.checkForWin(game.getGameBoard(), currentPlayer)) {
       game.updateScore();
       displayResult('win');
+      return true;
     } else if (game.checkForTie(game.getGameBoard())) {
       displayResult('tie');
+      return true;
     }
-    
-    xTurn = !xTurn;
-
-    if (mode !== 'friend' && !xTurn && game.getEmptyCells(game.getGameBoard()).length) AIMode.makeMove();
+    return false;
   }
 
   function displayResult(result) {
@@ -159,11 +162,7 @@ const game = (function() {
   }
 
   function getEmptyCells(board) {
-    const emptyCells = [];
-    board.filter((cell, index) => {
-      if (cell === '') emptyCells.push(index);
-    });
-    return emptyCells;
+    return board.map((cell, index) => cell === '' ? index : undefined).filter(index => index !== undefined);
   }
 
   return {
