@@ -4,6 +4,7 @@ const DOMLogic = (function() {
   const oScoreBoard = document.getElementById('o-player');
   const xScoreBoard = document.getElementById('x-player');
   const gameBoard_div = document.querySelector('.game-board');
+  const chosenMode_div = document.getElementById('chosen-mode');
   const mode_div = document.querySelector('.mode');
   const mode_btns = document.querySelectorAll('.mode-btns button');
   const restart_btn = document.getElementById('restart');
@@ -23,7 +24,8 @@ const DOMLogic = (function() {
   mode_btns.forEach(btn => btn.addEventListener('click', (e) => {
     mode = e.target.dataset.mode;
     if (mode === 'medium') convertMediumMode();
-    document.querySelector('.mode').classList.remove('show');
+    mode_div.classList.remove('show');
+    chosenMode_div.innerText = e.target.innerText;
   }));
 
   restart_btn.addEventListener('click', () => location.reload());
