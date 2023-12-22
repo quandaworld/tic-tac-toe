@@ -16,6 +16,7 @@ const DOMLogic = (function() {
   const xScore_div = document.getElementById('x-score');
   const oScore_div = document.getElementById('o-score');
   let xTurn = true;
+  let gameOver = false;
   let currentPlayer;
   let mode;
 
@@ -32,6 +33,7 @@ const DOMLogic = (function() {
 
   nextGame_btn.addEventListener('click', (e) => {
     clearGameBoard(e);
+    gameOver = false;
     if (mode !== 'friend' && !xTurn) AIMode.makeMove();
     if (mode[0] === 'm') convertMediumMode();
   });
@@ -86,7 +88,7 @@ const DOMLogic = (function() {
     ifGameOver();
     xTurn = !xTurn;
 
-    if (mode !== 'friend' && !xTurn && !ifGameOver()) {
+    if (mode !== 'friend' && !xTurn && !gameOver) {
       AIMode.makeMove();
     }
   }
@@ -95,12 +97,11 @@ const DOMLogic = (function() {
     if (game.checkForWin(game.getGameBoard(), currentPlayer)) {
       game.updateScore();
       displayResult('win');
-      return true;
+      gameOver = true;
     } else if (game.checkForTie(game.getGameBoard())) {
       displayResult('tie');
-      return true;
+      gameOver = true;
     }
-    return false;
   }
 
   function displayResult(result) {
