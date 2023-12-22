@@ -81,7 +81,7 @@ const DOMLogic = (function() {
     
     xTurn = !xTurn;
 
-    AIMode.playUnbeatable();
+    if (mode !== 'friend' && !xTurn) AIMode.makeMove();
   }
 
   function displayResult(result) {
@@ -99,7 +99,6 @@ const DOMLogic = (function() {
   }
 
   return {
-    getXTurn: () => xTurn,
     getCurrentPlayer: () => currentPlayer,
     getMode: () => mode,
     getXPlayer: () => X_PLAYER,
@@ -170,7 +169,7 @@ const AIMode = (function() {
   const humanPlayer = DOMLogic.getXPlayer();
   const aiPlayer = DOMLogic.getOPlayer();
 
-  function minimax(board, depth, isMaximizing) {
+  function minimax(board, isMaximizing) {
     if (game.checkForWin(board, humanPlayer)) {
       return -1;
     } else if (game.checkForWin(board, aiPlayer)) {
@@ -186,7 +185,7 @@ const AIMode = (function() {
       emptyCells.forEach(index => {
         const newBoard = [...board];
         newBoard[index] = aiPlayer;
-        const score = minimax(newBoard, depth + 1, false);
+        const score = minimax(newBoard, false);
         maxScore = Math.max(score, maxScore);
       });
       return maxScore;
@@ -195,38 +194,54 @@ const AIMode = (function() {
       emptyCells.forEach(index => {
         const newBoard = [...board];
         newBoard[index] = humanPlayer;
-        const score = minimax(newBoard, depth + 1, true);
+        const score = minimax(newBoard, true);
         minScore = Math.min(score, minScore);
       });
       return minScore; 
     }
   }
 
-  function findBestMove(board) {
+  function findMove(board) {
     let bestScore = -Infinity;
+    let worstScore = Infinity;
     let bestMove;
+    let worstMove;
 
     game.getEmptyCells(board).forEach(index => {
       const newBoard = [...board];
       newBoard[index] = aiPlayer;
-      const score = minimax(newBoard, 0, false);
+      const score = minimax(newBoard, false);
       if (score > bestScore) {
         bestScore = score;
         bestMove = index;
+      } else if (score < worstScore) {
+        worstScore = score;
+        worstMove = index;
       }
     });
 
-    return bestMove;
+    return {bestMove, worstMove};
   }
 
-  function playUnbeatable() {
-    if (DOMLogic.getMode() === "unbeatable" && !DOMLogic.getXTurn()) {
-      const bestMove = findBestMove(game.getGameBoard());
-      document.querySelector(`[data-cell='${bestMove}']`).click();
+  function makeMove() {
+    let move;
+
+    if (DOMLogic.getMode() === "easy") {
+      move = findMove(game.getGameBoard()).worstMove;
     }
+
+    if (DOMLogic.getMode() === "medium") {
+      
+    }
+
+    if (DOMLogic.getMode() === "unbeatable") {
+      move = findMove(game.getGameBoard()).bestMove;
+    }
+
+    document.querySelector(`[data-cell='${move}']`).click();
   }
 
   return {
-    playUnbeatable,
+    makeMove,
   };
 })();
