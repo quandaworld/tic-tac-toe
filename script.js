@@ -22,14 +22,28 @@ const DOMLogic = (function() {
 
   mode_btns.forEach(btn => btn.addEventListener('click', (e) => {
     mode = e.target.dataset.mode;
+    if (mode === 'medium') convertMediumMode();
     document.querySelector('.mode').classList.remove('show');
   }));
 
   restart_btn.addEventListener('click', () => location.reload());
 
-  nextGame_btn.addEventListener('click', clearGameBoard);
+  nextGame_btn.addEventListener('click', (e) => {
+    clearGameBoard(e);
+    if (mode !== 'friend' && !xTurn) AIMode.makeMove();
+    if (mode[0] === 'm') convertMediumMode();
+
+    // if unbeatable and O turn, O play in center (random)
+    // why in non-friend mode, xTurn doesn't switch normally after nextGame
+    console.log(mode);
+  });
 
   cell_divs.forEach(cell => cell.addEventListener('click', handleClick, {once: true}));
+
+  function convertMediumMode() {
+    const random = Math.floor(Math.random() * 2);
+    random === 0 ? mode = 'med-easy' : mode = 'med-unbeatable';
+  }
 
   function addMark(e, currentPlayer) {
     e.target.classList.add(currentPlayer);
@@ -81,7 +95,7 @@ const DOMLogic = (function() {
     
     xTurn = !xTurn;
 
-    if (mode !== 'friend' && !xTurn) AIMode.makeMove();
+    if (mode !== 'friend' && !xTurn && game.getEmptyCells(game.getGameBoard()).length) AIMode.makeMove();
   }
 
   function displayResult(result) {
@@ -201,7 +215,7 @@ const AIMode = (function() {
     }
   }
 
-  function findMove(board) {
+  function findMove(board, isMaximizing) {
     let bestScore = -Infinity;
     let worstScore = Infinity;
     let bestMove;
@@ -210,13 +224,19 @@ const AIMode = (function() {
     game.getEmptyCells(board).forEach(index => {
       const newBoard = [...board];
       newBoard[index] = aiPlayer;
-      const score = minimax(newBoard, false);
-      if (score > bestScore) {
-        bestScore = score;
-        bestMove = index;
-      } else if (score < worstScore) {
-        worstScore = score;
-        worstMove = index;
+      
+      if (isMaximizing) {
+        const score = minimax(newBoard, false);
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = index;
+        }
+      } else {
+        const score = minimax(newBoard, true);
+        if (score < worstScore) {
+          worstScore = score;
+          worstMove = index;
+        }
       }
     });
 
@@ -225,17 +245,12 @@ const AIMode = (function() {
 
   function makeMove() {
     let move;
+    const mode = DOMLogic.getMode();
 
-    if (DOMLogic.getMode() === "easy") {
-      move = findMove(game.getGameBoard()).worstMove;
-    }
-
-    if (DOMLogic.getMode() === "medium") {
-      
-    }
-
-    if (DOMLogic.getMode() === "unbeatable") {
-      move = findMove(game.getGameBoard()).bestMove;
+    if (mode === "easy" || mode === 'med-easy') {
+      move = findMove(game.getGameBoard(), false).worstMove;
+    } else {
+      move = findMove(game.getGameBoard(), true).bestMove;
     }
 
     document.querySelector(`[data-cell='${move}']`).click();
