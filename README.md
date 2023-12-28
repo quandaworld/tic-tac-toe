@@ -5,7 +5,8 @@ Tic-tac-toe game built with HTML, CSS, and JavaScript.
 
 ## Screenshots
 
-![App Screenshot]
+![App Screenshot](./images/Screen%20Shot%202023-12-28%20at%203.05.39%20PM.png)
+![App Screenshot](./images/Screen%20Shot%202023-12-28%20at%203.04.40%20PM.png)
 
 
 ## Demo
