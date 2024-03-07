@@ -20,36 +20,36 @@ const DOMLogic = (function() {
   let currentPlayer;
   let mode;
 
-  mode_div.classList.add('show');
+  mode_div.classList.add('show'); // show mode selection when page runs
 
-  mode_btns.forEach(btn => btn.addEventListener('click', (e) => {
+  mode_btns.forEach(btn => btn.addEventListener('click', (e) => { // update game interface after choosing mode
     mode = e.target.dataset.mode;
     if (mode === 'medium') convertMediumMode();
     mode_div.classList.remove('show');
     chosenMode_div.innerText = e.target.innerText;
   }));
 
-  restart_btn.addEventListener('click', () => location.reload());
+  restart_btn.addEventListener('click', () => location.reload()); // reload page when hitting restart
 
-  nextGame_btn.addEventListener('click', (e) => {
+  nextGame_btn.addEventListener('click', (e) => { // update game interface when hitting next game
     clearGameBoard(e);
     gameOver = false;
     if (mode !== 'friend' && !xTurn) AIMode.makeMove();
     if (mode[0] === 'm') convertMediumMode();
   });
 
-  cell_divs.forEach(cell => cell.addEventListener('click', handleClick, {once: true}));
+  cell_divs.forEach(cell => cell.addEventListener('click', handleClick, {once: true})); // add event listeners for game board's cells
 
-  function convertMediumMode() {
+  function convertMediumMode() { // convert medium mode to either easy or unbeatable randomly
     const random = Math.floor(Math.random() * 2);
     random === 0 ? mode = 'med-easy' : mode = 'med-unbeatable';
   }
 
-  function addMark(e, currentPlayer) {
+  function addMark(e, currentPlayer) { // add mark on game board
     e.target.classList.add(currentPlayer);
   }
 
-  function clearGameBoard(e) {
+  function clearGameBoard(e) { // reset game interface
     resultMessage_div.classList.remove('show');
     gameBoard_div.classList.remove('end');
     game.resetGameBoard();
@@ -59,7 +59,7 @@ const DOMLogic = (function() {
     });
   }
 
-  function highlightCurrentPlayer() {
+  function highlightCurrentPlayer() { // indicate current player's turn
     oScoreBoard.classList.remove(O_PLAYER);
     xScoreBoard.classList.remove(X_PLAYER);
     if (xTurn) {
@@ -69,7 +69,7 @@ const DOMLogic = (function() {
     }
   }
 
-  function setBoardHoverClass() {
+  function setBoardHoverClass() { // hovering effect to indicate current mark
     gameBoard_div.classList.remove(O_PLAYER);
     gameBoard_div.classList.remove(X_PLAYER);
     if (xTurn) {
@@ -79,7 +79,7 @@ const DOMLogic = (function() {
     }
   }
 
-  function handleClick(e) {
+  function handleClick(e) { // chain of updates after every cell's click
     currentPlayer = xTurn ? X_PLAYER : O_PLAYER;
     addMark(e, currentPlayer);
     highlightCurrentPlayer();
@@ -93,7 +93,7 @@ const DOMLogic = (function() {
     }
   }
 
-  function ifGameOver() {
+  function ifGameOver() { // update game interface when game ends
     if (game.checkForWin(game.getGameBoard(), currentPlayer)) {
       game.updateScore();
       displayResult('win');
@@ -104,7 +104,7 @@ const DOMLogic = (function() {
     }
   }
 
-  function displayResult(result) {
+  function displayResult(result) { // show final results
     if (result === 'tie') {
       winner_span.innerText = '';
       result_span.innerText = 'DRAW';
@@ -126,7 +126,7 @@ const DOMLogic = (function() {
   };
 })();
 
-const game = (function() {
+const game = (function() { // module handles game logic
   const gameBoard = ['', '', '', '', '', '', '', '', ''];
   let xScore = 0;
   let oScore = 0;
@@ -135,7 +135,7 @@ const game = (function() {
     gameBoard[e.target.dataset.cell] = DOMLogic.getCurrentPlayer();
   }
 
-  function checkForWin(board, player) {
+  function checkForWin(board, player) { // check if there is a winner
     const winCombinations = [
       [0, 1, 2],
       [0, 3, 6],
@@ -152,19 +152,19 @@ const game = (function() {
     });
   }
 
-  function checkForTie(board) {
+  function checkForTie(board) { // check if the game is tie
     return !board.includes('');
   }
 
-  function updateScore() {
+  function updateScore() { // update players' score after each game
     (DOMLogic.getCurrentPlayer() === DOMLogic.getXPlayer()) ? xScore++ : oScore++;
   }
 
-  function resetGameBoard() {
+  function resetGameBoard() { // clear game board
     gameBoard.forEach((cell, index) => gameBoard[index] = '');
   }
 
-  function getEmptyCells(board) {
+  function getEmptyCells(board) { // get cells that have no marks
     return board.map((cell, index) => cell === '' ? index : undefined).filter(index => index !== undefined);
   }
 
@@ -181,11 +181,11 @@ const game = (function() {
   };
 })();
 
-const AIMode = (function() {
+const AIMode = (function() { // modules handle AI game mode
   const humanPlayer = DOMLogic.getXPlayer();
   const aiPlayer = DOMLogic.getOPlayer();
 
-  function minimax(board, isMaximizing) {
+  function minimax(board, isMaximizing) { // Minimax algorithm to maximize AI's score
     if (game.checkForWin(board, humanPlayer)) {
       return -1;
     } else if (game.checkForWin(board, aiPlayer)) {
@@ -217,7 +217,7 @@ const AIMode = (function() {
     }
   }
 
-  function findMove(board, isMaximizing) {
+  function findMove(board, isMaximizing) { // find best AI's move based on scores
     let bestScore = -Infinity;
     let worstScore = Infinity;
     let bestMove;
@@ -245,7 +245,7 @@ const AIMode = (function() {
     return {bestMove, worstMove};
   }
 
-  function makeMove() {
+  function makeMove() { // determine AI's move depends on game mode
     let move;
     const mode = DOMLogic.getMode();
 
