@@ -1,3 +1,4 @@
+// Module handles DOM logic and manipulations
 const DOMLogic = (function() {
   const X_PLAYER = 'x';
   const O_PLAYER = 'o';
@@ -15,30 +16,53 @@ const DOMLogic = (function() {
   const result_span = document.getElementById('result');
   const xScore_div = document.getElementById('x-score');
   const oScore_div = document.getElementById('o-score');
+
   let xTurn = true;
   let gameOver = false;
-  let currentPlayer;
+  let currentPlayer = X_PLAYER;
   let mode;
+
+  mode_btns.forEach(btn => btn.addEventListener('click', handleModeSelection));
+  cell_divs.forEach(cell => cell.addEventListener('click', handleClick, {once: true})); // add event listeners for game board's cells
+  restart_btn.addEventListener('click', resetToGameMode); 
+  nextGame_btn.addEventListener('click', handleNextGame);
 
   mode_div.classList.add('show'); // show mode selection when page runs
 
-  mode_btns.forEach(btn => btn.addEventListener('click', (e) => { // update game interface after choosing mode
+  function handleModeSelection(e) {
     mode = e.target.dataset.mode;
-    if (mode === 'medium') convertMediumMode();
+    
+    if (mode === 'medium') convertMediumMode(); // update game interface after choosing mode
+  
     mode_div.classList.remove('show');
-    chosenMode_div.innerText = e.target.innerText;
-  }));
+    chosenMode_div.textContent = e.target.textContent;
+  }
 
-  restart_btn.addEventListener('click', () => location.reload()); // reload page when hitting restart
+  function resetToGameMode() {
+    clearGameBoard();
 
-  nextGame_btn.addEventListener('click', (e) => { // update game interface when hitting next game
+    // Show mode selection screen
+    mode_div.classList.add('show');
+    chosenMode_div.textContent = 'Game Mode';
+
+    // Clear scoreboard display
+    xScore_div.innerText = '-';
+    oScore_div.innerText = '-';
+  
+    // Reset internal game state
+    xTurn = true;
+    gameOver = false;
+    mode = null;
+    game.setOScore(0);
+    game.setXScore(0);
+  }  
+
+  function handleNextGame(e) { // update game interface when hitting next game
     clearGameBoard(e);
     gameOver = false;
     if (mode !== 'friend' && !xTurn) AIMode.makeMove();
     if (mode[0] === 'm') convertMediumMode();
-  });
-
-  cell_divs.forEach(cell => cell.addEventListener('click', handleClick, {once: true})); // add event listeners for game board's cells
+  }
 
   function convertMediumMode() { // convert medium mode to either easy or unbeatable randomly
     const random = Math.floor(Math.random() * 2);
@@ -49,11 +73,12 @@ const DOMLogic = (function() {
     e.target.classList.add(currentPlayer);
   }
 
-  function clearGameBoard(e) { // reset game interface
+  function clearGameBoard() { // reset game interface
     resultMessage_div.classList.remove('show');
     gameBoard_div.classList.remove('end');
     game.resetGameBoard();
-    cell_divs.forEach(cell => {
+
+    cell_divs.forEach(cell => { // reset cells to initial state
       cell.classList.remove(X_PLAYER, O_PLAYER);
       cell.addEventListener('click', handleClick, {once: true});
     });
@@ -62,6 +87,7 @@ const DOMLogic = (function() {
   function highlightCurrentPlayer() { // indicate current player's turn
     oScoreBoard.classList.remove(O_PLAYER);
     xScoreBoard.classList.remove(X_PLAYER);
+
     if (xTurn) {
       oScoreBoard.classList.add(O_PLAYER);
     } else {
@@ -72,6 +98,7 @@ const DOMLogic = (function() {
   function setBoardHoverClass() { // hovering effect to indicate current mark
     gameBoard_div.classList.remove(O_PLAYER);
     gameBoard_div.classList.remove(X_PLAYER);
+
     if (xTurn) {
       gameBoard_div.classList.add(O_PLAYER);
     } else {
@@ -80,11 +107,14 @@ const DOMLogic = (function() {
   }
 
   function handleClick(e) { // chain of updates after every cell's click
+    if (gameOver) return; 
+
     currentPlayer = xTurn ? X_PLAYER : O_PLAYER;
     addMark(e, currentPlayer);
     highlightCurrentPlayer();
     setBoardHoverClass();
     game.updateGameBoard(e);
+
     ifGameOver();
     xTurn = !xTurn;
 
@@ -105,15 +135,13 @@ const DOMLogic = (function() {
   }
 
   function displayResult(result) { // show final results
-    if (result === 'tie') {
-      winner_span.innerText = '';
-      result_span.innerText = 'DRAW';
-    } else {
-      winner_span.innerText = currentPlayer.toUpperCase();
-      result_span.innerText = ' WINS';
-      xScore_div.innerText = game.getXScore() ? game.getXScore() : '-';
-      oScore_div.innerText = game.getOScore() ? game.getOScore() : '-';
-    }
+    const isTie = result === 'tie';
+    winner_span.innerText = isTie ? '' : currentPlayer.toUpperCase();
+    result_span.innerText = isTie ? 'DRAW' : ' WIN';
+
+    xScore_div.innerText = game.getXScore() || '-';
+    oScore_div.innerText = game.getOScore() || '-';
+
     resultMessage_div.classList.add('show');
     gameBoard_div.classList.add('end');
   }
@@ -126,8 +154,14 @@ const DOMLogic = (function() {
   };
 })();
 
-const game = (function() { // module handles game logic
+// Module handles game logic
+const game = (function() { 
   const gameBoard = ['', '', '', '', '', '', '', '', ''];
+  const winningCombos = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+    [0, 4, 8], [2, 4, 6]            // Diagonals
+  ];
   let xScore = 0;
   let oScore = 0;
 
@@ -136,18 +170,7 @@ const game = (function() { // module handles game logic
   }
 
   function checkForWin(board, player) { // check if there is a winner
-    const winCombinations = [
-      [0, 1, 2],
-      [0, 3, 6],
-      [0, 4, 8],
-      [1, 4, 7],
-      [2, 4, 6],
-      [2, 5, 8],
-      [3, 4, 5],
-      [6, 7, 8]
-    ];
-
-    return winCombinations.some(combination => {
+    return winningCombos.some(combination => {
       return combination.every(index => board[index] === player)
     });
   }
@@ -161,11 +184,17 @@ const game = (function() { // module handles game logic
   }
 
   function resetGameBoard() { // clear game board
-    gameBoard.forEach((cell, index) => gameBoard[index] = '');
+    gameBoard.fill('');
   }
 
   function getEmptyCells(board) { // get cells that have no marks
-    return board.map((cell, index) => cell === '' ? index : undefined).filter(index => index !== undefined);
+    const arr = [];
+    
+    board.forEach((cell, index) => {
+      if (cell === '') arr.push(index);
+    });
+
+    return arr;
   }
 
   return {
@@ -177,11 +206,14 @@ const game = (function() { // module handles game logic
     getEmptyCells,
     getXScore: () => xScore,
     getOScore: () => oScore,
+    setXScore: (score) => xScore = score,
+    setOScore: (score) => oScore = score,
     getGameBoard: () => gameBoard,
   };
 })();
 
-const AIMode = (function() { // modules handle AI game mode
+// Module handle AI game mode
+const AIMode = (function() {
   const humanPlayer = DOMLogic.getXPlayer();
   const aiPlayer = DOMLogic.getOPlayer();
 
